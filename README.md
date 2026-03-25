@@ -89,7 +89,7 @@
 ## 🔧 Installation <a name="installation"></a>
 ```bash
 # Clone the repository
-git clone https://github.com/falcon-vla/falcon.git
+git clone https://github.com/FALCON-VLA/FALCON.git
 cd FALCON
 ```
 💡 For now, we support <a href="" target="https://github.com/mees/calvin">CALVIN</a> and <a href="" target="https://github.com/simpler-env/SimplerEnv">SimplerEnv</a>, you can follow their guidance to download the training/validation data. Besides, we suggest create seperate virtual envs for different benchmarks to prevent from conflicts. Also, we provide **easy-setup scripts** to help you setup the environments that is compatible with our codebase for running these benchmarks:
