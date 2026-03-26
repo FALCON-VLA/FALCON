@@ -15,7 +15,7 @@
 <a href="https://huggingface.co/papers/2510.17439" target="_blank">
     <img alt="HF Paper: FALCON" src="https://img.shields.io/badge/%F0%9F%A4%97%20_Paper-FALCON-ffc107?color=ffc107&logoColor=white" height="25" />
 </a>
-<a href="https://huggingface.co/FALCON-VLA" target="_blank">
+<a href="https://huggingface.co/FALCON-VLA/FALCON-series" target="_blank">
     <img alt="HF Model: FALCON" src="https://img.shields.io/badge/%F0%9F%A4%97%20_Model-FALCON-ffc107?color=ffc107&logoColor=white" height="25" />
 </a>
 <!-- <a href="https://huggingface.co/datasets/robovlms/bytedance_robot_benchmark_20" target="_blank">
