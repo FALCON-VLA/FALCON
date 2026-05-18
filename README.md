@@ -319,7 +319,7 @@ For now, we support the **CALVIN** and **Open X-Embodiment** datasets, as well a
 }
 ```
 > [!NOTE]
-> We also provide the preprocessed point cloud data and camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets).
+> We also provide the preprocessed point cloud data and camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [FALCON_CALVIN-3D dataset](https://huggingface.co/FALCON-VLA/datasets).
 
 ##### SimplerEnv Dataset
 ```python
