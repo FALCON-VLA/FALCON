@@ -18,9 +18,9 @@
 <a href="https://huggingface.co/FALCON-VLA/FALCON-series" target="_blank">
     <img alt="HF Model: FALCON" src="https://img.shields.io/badge/%F0%9F%A4%97%20_Model-FALCON-ffc107?color=ffc107&logoColor=white" height="25" />
 </a>
-<!-- <a href="https://huggingface.co/datasets/robovlms/bytedance_robot_benchmark_20" target="_blank">
-    <img alt="HF Dataset: BDRBench-20" src="https://img.shields.io/badge/%F0%9F%A4%97%20_Dataset-BDRBench20-ffc107?color=ffc107&logoColor=white" height="25" />
-</a> -->
+<a href="https://huggingface.co/FALCON-VLA/datasets" target="_blank">
+    <img alt="HF Dataset: CALVIN-3D" src="https://img.shields.io/badge/%F0%9F%A4%97%20_Dataset-CALVIN3D-ffc107?color=ffc107&logoColor=white" height="25" />
+</a>
 <br>
 <a href="https://www.python.org/" target="_blank">
     <img alt="Python 3.8" src="https://img.shields.io/badge/Python-%3E=3.8-blue" height="25" />
@@ -69,6 +69,8 @@
 </p>
 
 ## Updates 🚀🚀🚀
+- [18/05/2026] Released the **pre-training** and **post-training code** for the FALCON series, and the preprocessed camera parameters for **CALVIN ABC & CALVIN ABCD**. Welcome to check it out and build on top of it!
+
 - [25/03/2026] Released **inference code of FALCON** and **relevant weights on CALVIN & SimplerEnv**, please feel free to try our model!
 
 - [26/01/2026] 🎊 Thrilled to share that our paper has been accepted to ICLR 2026! Code will be open-sourced soon. Stay tuned!
@@ -79,6 +81,7 @@
 - [Installation](#installation)
 - [Benchmark Performance Comparison](#benchmark-performance-comparison)
 - [Model Zoo](#model-zoo)
+- [Training](#training)
 - [Evaluation](#evaluation)
 - [TODO List](#todo-list)
 - [FAQs](#faqs)
@@ -144,7 +147,7 @@ python eval/simpler/env_test.py
 
 ### Real-World Experiments
 ![real-world](./imgs/real_base_tasks.png "Real-World Performance")
-💡 For more sim/real-world benchmark results, please refer to our paper.
+💡 For more sim/real-world benchmark results, please refer to our [paper](https://arxiv.org/abs/2510.17439).
 
 ## 🤗 Model Zoo <a name="model-zoo"></a>
 We provide the following model weights and their config files in our paper:
@@ -200,8 +203,227 @@ We provide the following model weights and their config files in our paper:
   </tr>
 </table>
 
+## 🏋️ Training <a name="training"></a>
+### Training Configuration File
+The configuration file comprises five main sections:
+#### Basic VLA Model Configurations
+Define the basic configurations of the VLA model:
+```python
+"robovlm_name": "RoboKosMos", # Name of the registered VLA
+"model": "kosmos", # Name of the VLM model used for necessary paths, specialized operations like initialization and prompting
+"model_url": "https://huggingface.co/microsoft/kosmos-2-patch14-224", # Huggingface url of VLMs, it will be automaticly download before training start
+"image_size": 224, # Input image size
+"window_size": 1/16, # VLA history length
+"fwd_pred_next_n": 10, # Predict action chunk length
+"batch_size": 4, # Batch size on each GPU
+"optimizer": "adamw", # Optimizer type
+"learning_rate": 1e-4, # Learning rate
+"weight_decay": 0.0, # Weight decay
+"output_root": "/path/to/ur/checkpoints",
+"log_root": "/path/to/ur/logs",
+"cache_root": "/path/to/ur/cache",
+"model_load_path": "/path/to/ur/pretrained/checkpoints",
+"model_load_source": "torch",  # Options: `torch`, `deepspeed`
+```
+💡 During training, the model checkpoint and running configuration will be saved at the paths specified by the `output_root` and `log_root` in the config file.
+
+#### Training Setup Configurations
+Specify the detailed training parameters. You can choose which part of the model to train, and whether to freeze some parts:
+```python
+"train_setup": {
+    "precision": "bf16/fp32",
+    "predict_action": true,
+    "predict_forward": false,
+    "predict_forward_hand": false,
+    "predict_caption": false,
+    "train_vision": true,
+    "bits": -1,
+    "freeze_mm_mlp_adapter": false,
+    "freeze_backbone": false,
+    "freeze_resampler": false,
+    "tune_mm_mlp_adapter": false,
+    "mm_use_im_start_end": false,
+    "mm_use_im_patch_token": false,
+    "gradient_checkpointing": false,
+    "lora_enable": false,
+    "mm_projector_lr": 0.0001,
+    "lora_r": 64,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "lora_bias": "none",
+    "train_text_embedding": true,
+    "train_act_head": false,  # false means freeze action head
+    "train_spatial_injector": true,
+    "train_decoder_layers": -1
+},
+```
+
+#### Action Head Configurations
+Specify the parameters of the action head (if applicable), take FCDecoder_ESM as an example:
+```python
+"act_head": {
+    "type": "FCDecoder_ESM",
+    "hidden_size": 1024,
+    "action_dim": 7,
+    "down_sample": "none",
+    "latent": 1,
+    "fwd_pred_next_n": 1,  # will inherit from `fwd_pred_next_n`
+    "window_size": 1,  # will inherit from `window_size`
+    "action_space": "continuous",
+    "with_history": true,
+    "history_type": "post",
+    "use_spatial_injector": true,
+    "esm_use_hand_rgb": false,
+    "camera_gt_pt": 0.0,  # set to 0.0 if not using camera poses as ESM input
+    "depth_gt_pt": 1.0,  # set to 1.0 if using depth maps as ESM input
+    "esm_ckpt_path": "/path/to/ur/esm/checkpoints"
+},
+```
+
+#### VLM Configurations
+Specify the tokenizer type, VLM type, and the paths to the pretrained models. If you do not download and specify any pretrained VLM, our script will download it automatically with the specified `model_url`:
+```python
+"tokenizer": {
+    "type": "AutoProcessor",
+    "pretrained_model_name_or_path": ".vlms/kosmos-2-patch14-224",  # If not exist will download automatically from specified `model_url`
+    "tokenizer_type": "kosmos",
+    "max_text_len": 256,
+    "additional_special_tokens": null
+},
+"vlm": {
+    "type": "AutoModelForVision2Seq",
+    "name": "kosmos",
+    "pretrained_model_name_or_path": ".vlms/kosmos-2-patch14-224"
+},
+```
+
+#### Dataset Configurations
+For now, we support the **CALVIN** and **Open X-Embodiment** datasets, as well as custom datasets. Example dataset configurations are as follows:
+##### Calvin Dataset
+```python
+"train_dataset": {
+    "type": "DiskCalvinDataset_ESM",
+    "data_dir": "calvin/dataset/task_ABC_D/training",
+    "cam_params_dir": "calvin_cam_params/packaged_ABC_D/training",
+    "shift_first": false,
+    "model_name": "kosmos",   # Same as 'model' in configs
+    "rgb_pad": 10,            # Random shift size for static images
+    "gripper_pad": 4,         # Random shift size for gripper images
+    "few_shot": false
+},
+"val_dataset": {
+    "type": "DiskCalvinDataset_ESM",
+    "data_dir": "calvin/dataset/task_ABC_D/validation",
+    "cam_params_dir": "calvin_cam_params/packaged_ABC_D/validation",
+    "model_name": "kosmos"   # Same as 'model' in configs
+}
+```
+<!-- 💡 We also provide the point cloud data and camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets). -->
+> [!NOTE]
+> We also provide the preprocessed camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets).
+
+##### SimplerEnv Dataset
+```python
+"train_dataset": {
+    "type": "OpenVLADataset",
+    "data_root_dir": "openvla/datasets/open-x-embodiment",
+    "model_name": "kosmos",   # Same as 'model' in configs
+    "image_aug": true,
+    "mode": "train",
+    "data_mix": "bridge",   # Options: `bridge`, `rt_1`, `oxe_magic_soup` and other data mixtures
+    "window_sample": "sliding",
+    "organize_type": "interleave",
+    "shuffle_buffer_size": 51200,
+    "train": true
+},
+"val_dataset": {
+    "type": "OpenVLADataset",
+    "data_root_dir": "openvla/datasets/open-x-embodiment",
+    "model_name": "kosmos",   # Same as 'model' in configs
+    "mode": "train",
+    "data_mix": "bridge",
+    "window_sample": "sliding",
+    "organize_type": "interleave",
+    "shuffle_buffer_size": 10000,
+    "train": false
+}
+```
+
+Additionally, you can define your own custom dataset in the following format:
+```python
+"rgb": image_tensors,           # Shape: [Batch Size, Window Size, Channel, Width, Height]
+"hand_rgb": gripper_tensors,    # Shape: [Batch Size, Window Size, Channel, Width, Height]
+"action": action_tensors,       # Shape: [Batch Size, Window Size, Action Dim]
+"text": text_tensors,           # Shape: [Batch Size, Max Text Len]
+"text_mask": attention_mask,    # Shape: [Batch Size, Max Text Len]
+"action_chunk": action_chunk,   # Shape: [Batch Size, Window Size, Chunk Size, Action Dim]
+"chunk_mask": action_mask,      # Mask for valid action chunks
+"instr_and_action_ids": instr_and_action_ids,  # Input for auto-regressive next token prediction
+"instr_and_action_labels": instr_and_action_labels,  # Label for auto-regressive next token prediction
+"instr_and_action_mask": instr_and_action_mask,  # Mask for auto-regressive next token prediction
+"raw_text": raw_text,           # Raw list of language instructions for each action chunk
+"data_source": data_source      # Task type string (e.g., calvin_action, must involve 'action' for action prediction)
+```
+
+After defining the dataset, wrap it with a custom `collater` and register it in `data/__init__.py` as follows:
+```python
+from .custom_dataset import CustomDataset
+__all__.append('CustomDataset')
+```
+
+Then, add your custom dataset to the config file:
+##### Customed Dataset
+```python
+"train_dataset": {
+    "type": "CustomDataset",
+    "data_dir": "path/to/custom_data",
+    "shift_first": false,
+    "model_name": "kosmos",
+    "rgb_pad": 10,            # Random shift size for RGB
+    "gripper_pad": 4         # Random shift size for gripper
+},
+"val_dataset": {
+    "type": "CustomDataset",
+    "data_dir": "path/to/custom_data",
+    "model_name": "kosmos"
+}
+```
+
+#### Config Management
+The training configuration files automatically inherit parameters like `window_size`, ensuring consistency across datasets. You can easily switch between datasets by updating the `train_dataset` and `val_dataset` sections in your config file.
+
+### 🚀 Pre-train from Scratch
+FALCON is pretrained on 1.1 million real-robot demonstrations from the OXE and CALVIN datasets separately, using 32 A100 GPUs for approximately five days with a batch size of 512. You can pre-train the model from scratch using the following command. Before running the script, please download the [Open X-Embodiment](https://robotics-transformer-x.github.io) dataset (need to convert it to the RLDS format, see [moojink/rlds_dataset_builder](https://github.com/moojink/rlds_dataset_builder) for more info) and [CALVIN](https://github.com/mees/calvin) dataset (optional).
+```bash
+# pretrain on oxe
+bash scripts/run.sh configs/oxe_training/finetune_kosmos_cont-fc-post_full-ft_text_vision_wd-0_ws-1_act-5_oxe_pretrain_oxe-magic-soup.json
+
+# pretrain on calvin
+bash scripts/run.sh configs/calvin_finetune/finetune_kosmos_cont-fc-post_full-ft_text_vision_wd-0_use-hand_ws-1_act-10.json
+bash scripts/run.sh configs/calvin_finetune/finetune_kosmos_cont-lstm-post_full-ft_text_vision_wd-0_use-hand_ws-16_act-10.json
+```
+
+💡 To start the training process, use `scripts/run.sh` followed by the path to the desired config file:
+```bash
+bash scripts/run.sh path/to/config.json
+```
+
+### 🚀 Progressive Post-train
+To integrate spatial awareness into the VLA model while preserving the pre-trained components’ capabilities, we carefully design a two-stage post-training pipeline, please refer to our [paper](https://arxiv.org/abs/2510.17439) for more details. Most of our post-training experiments are conducted using 32 A100 GPUs.
+```bash
+# sft on oxe
+bash scripts/run.sh configs/oxe_training/finetune_kosmos_cont-fc-post_esm_wd-0_ws-1_act-5_bridge_finetune.json
+bash scripts/run.sh configs/oxe_training/finetune_kosmos_cont-fc-post_esm_wd-0_ws-1_act-5_gr_finetune.json
+
+# sft on calvin
+bash scripts/run.sh configs/calvin_finetune/finetune_kosmos_cont-fc-post_esm_wd-0_use-hand_ws-1_act-10.json
+bash scripts/run.sh configs/calvin_finetune/finetune_kosmos_cont-lstm-post_esm_wd-0_use-hand_ws-16_act-10.json
+
+# sft FALCON with point cloud input on calvin
+bash scripts/run.sh configs/calvin_finetune/finetune_kosmos_cont-fc-post_pcd_wd-0_use-hand_ws-1_act-10.json
+```
+
 ## 🏃 Evaluation <a name="evaluation"></a>
-<!-- During training, the model checkpoint and running configuration are saved at the paths specified by the `output_root` and `log_root` in the config file.  -->
 ### Evaluation on CALVIN
 💡 Add the paths to your model checkpoint and configuration files in the `ckpt_paths` list for calvin eval script `eval/calvin/eval_ckpts.py` as shown below:
 ```python
@@ -258,7 +480,8 @@ python3 tools/get_simpler_results.py
 ## 🗒️ TODO List <a name="todo-list"></a>
 - [x] Release the code, model of FALCON.
 - [x] Release the CALVIN & SimplerEnv evaluation code and model weights for FALCON series.
-- [ ] Release pre-training / fine-tuning code for FALCON series.
+- [x] Release pre-training / post-training code for FALCON series.
+- [x] Release the preprocessed camera parameters for CALVIN ABC & CALVIN ABCD.
 - [ ] Release the code for real-world deployment of FALCON via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon).
 
 ## 🤗 FAQs <a name="faqs"></a>

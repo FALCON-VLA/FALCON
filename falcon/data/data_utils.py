@@ -1354,8 +1354,6 @@ def rand_sample_pcd(episode, n_points):
     # Reshape to (seq_len, H*W, 3)
     seq_len = static_pcd.shape[0]
     static_pcd = static_pcd.reshape(seq_len, -1, 3)  # (seq_len, n_pts, 3)
-    # vis original pcd
-    # vis_pcd(static_pcd[2], "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/original")
     
     # Random sampling if needed
     if static_pcd.shape[1] > n_points:
@@ -1365,8 +1363,6 @@ def rand_sample_pcd(episode, n_points):
             replace=False        # Ensure unique sampling
         )
         static_pcd = static_pcd[:, random_indices]
-    # vis downsampled pcd
-    # vis_pcd(static_pcd[2], "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/downsampled")
     processed["static_pcd"] = torch.from_numpy(static_pcd)
     
     # Process gripper point cloud (same logic)
@@ -1493,11 +1489,8 @@ def rand_sample_pcd_filter(episode, n_points):
     static_pcd = episode["static_pcd"]  # (seq_len, H, W, 3)
     seq_len = static_pcd.shape[0]
     static_pcd = static_pcd.reshape(seq_len, -1, 3)  # (seq_len, N, 3)
-    # vis pcd
-    # vis_pcd(static_pcd[2], "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/original")
     # Apply filtering + random sampling in batch
     static_filtered = _filter_and_sample_batch(static_pcd, n_points, MAX_DISTANCE)
-    # vis_pcd(static_filtered[2], "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/downsampled")
     # Convert to torch.Tensor
     processed["static_pcd"] = torch.from_numpy(static_filtered)  # (seq_len, n_points, 3)
 

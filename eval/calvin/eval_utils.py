@@ -335,8 +335,6 @@ def eval_filtered_sample_pcd(pcd: np.ndarray, n_points: int, max_dist: float) ->
     assert n_points > 0, f"n_points must be positive, got {n_points}"
     # Flatten to (N, 3) if necessary
     pcd_flat = pcd.reshape(-1, 3)  # shape = (N, 3)
-    # vis original pcd
-    # vis_pcd(pcd_flat, "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/eval/dis_0.8/original")
     
     # If the flat array is empty, return zeros immediately
     if pcd_flat.shape[0] == 0:
@@ -350,8 +348,6 @@ def eval_filtered_sample_pcd(pcd: np.ndarray, n_points: int, max_dist: float) ->
     # 3. Filter out points with distance >= max_dist
     mask = (dists < max_dist)                 # shape = (N,)
     valid_pts = pcd_flat[mask]                # shape = (M, 3), M <= N
-    # vis filtered pcd
-    # vis_pcd(valid_pts, "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/eval/dis_0.8/filtered")
     # 4. Normalize valid points
     valid_pts = normalize_pc(valid_pts)
     M = valid_pts.shape[0]
@@ -372,8 +368,6 @@ def eval_filtered_sample_pcd(pcd: np.ndarray, n_points: int, max_dist: float) ->
         # C: M == 0 -> no valid points, leave sampled as all zeros
         # sampled already initialized to zeros
         pass
-    # vis downsampled pcd
-    # vis_pcd(sampled, "/mnt/bn/robotics-zzs-lq2/RoboVLMs_pointvla/pcd_vis/eval/dis_0.8/downsampled")
     
     return torch.as_tensor(sampled, dtype=torch.float32)
 
