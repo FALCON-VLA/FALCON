@@ -69,7 +69,7 @@
 </p>
 
 ## Updates 🚀🚀🚀
-- [18/05/2026] Released the **pre-training** and **post-training code** for the FALCON series, and the preprocessed camera parameters for **CALVIN ABC & CALVIN ABCD**. Welcome to check it out and build on top of it!
+- [18/05/2026] Released the **pre-training** and **post-training code** for the FALCON series, and the preprocessed point cloud data & camera parameters for **CALVIN ABC & CALVIN ABCD**. Welcome to check it out and build on top of it!
 
 - [25/03/2026] Released **inference code of FALCON** and **relevant weights on CALVIN & SimplerEnv**, please feel free to try our model!
 
@@ -318,9 +318,8 @@ For now, we support the **CALVIN** and **Open X-Embodiment** datasets, as well a
     "model_name": "kosmos"   # Same as 'model' in configs
 }
 ```
-<!-- 💡 We also provide the point cloud data and camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets). -->
 > [!NOTE]
-> We also provide the preprocessed camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets).
+> We also provide the preprocessed point cloud data and camera parameters for **CALVIN ABC & CALVIN ABCD**. Please download them from the following link: [Hugging Face dataset](https://huggingface.co/FALCON-VLA/datasets).
 
 ##### SimplerEnv Dataset
 ```python
@@ -481,7 +480,7 @@ python3 tools/get_simpler_results.py
 - [x] Release the code, model of FALCON.
 - [x] Release the CALVIN & SimplerEnv evaluation code and model weights for FALCON series.
 - [x] Release pre-training / post-training code for FALCON series.
-- [x] Release the preprocessed camera parameters for CALVIN ABC & CALVIN ABCD.
+- [x] Release the preprocessed point cloud data and camera parameters for CALVIN ABC & CALVIN ABCD.
 - [ ] Release the code for real-world deployment of FALCON via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon).
 
 ## 🤗 FAQs <a name="faqs"></a>
