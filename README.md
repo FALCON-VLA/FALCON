@@ -259,7 +259,7 @@ Specify the detailed training parameters. You can choose which part of the model
 ```
 
 #### Action Head Configurations
-Specify the parameters of the action head (if applicable), take FCDecoder_ESM as an example:
+Specify the parameters of the action head, take FCDecoder_ESM as an example:
 ```python
 "act_head": {
     "type": "FCDecoder_ESM",
