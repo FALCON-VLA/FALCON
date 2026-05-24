@@ -69,6 +69,8 @@
 </p>
 
 ## Updates 🚀🚀🚀
+- [25/05/2026] Released the real-world deployment pipeline for the FALCON series via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon), along with FALCON weights pretrained on OXE dataset. Please feel free to explore, deploy, and adapt it to your needs!
+
 - [18/05/2026] Released the **pre-training** and **post-training code** for the FALCON series, and the preprocessed point cloud data & camera parameters for **CALVIN ABC & CALVIN ABCD**. Welcome to check it out and build on top of it!
 
 - [25/03/2026] Released **inference code of FALCON** and **relevant weights on CALVIN & SimplerEnv**, please feel free to try our model!
@@ -83,6 +85,7 @@
 - [Model Zoo](#model-zoo)
 - [Training](#training)
 - [Evaluation](#evaluation)
+- [Real-World Deployment](#real-world-deployment)
 - [TODO List](#todo-list)
 - [FAQs](#faqs)
 - [Citation](#citation)
@@ -200,6 +203,12 @@ We provide the following model weights and their config files in our paper:
     <td><a href="https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/falcon-esm-fc-simpler-gr/ckpts">falcon-fc-simpler-fractal-pt</a></td>
     <td><a href="https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/esm">esm-1b</a></td>
     <td>pretrained on oxe then finetune on fractal dataset with RGB inputs to ESM, Tab. 3.</td>
+  </tr>
+  <tr>
+    <td>FALCON-FC-OXE-MAGIC-SOUP-PT</td>
+    <td><a href="https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/">falcon-oxe-magic-soup-pretrain-pt</a></td>
+    <td> / </td>
+    <td>FALCON with fc head pretrained on oxe using oxe_magic_soup data mixture.</td>
   </tr>
 </table>
 
@@ -476,12 +485,30 @@ python3 tools/get_simpler_results.py
 > [!NOTE]
 > Please make sure that the paths to the model checkpoints and configuration files are correct and match the setup of your environment before running the benchmark evaluation scripts.
 
+## 🌍 Real-World Deployment <a name="real-world-deployment"></a>
+We provide our model wrapper for Real-World deployments in [ManiUniCon/maniunicon/customize/policy_model/falcon_model.py](https://github.com/Universal-Control/ManiUniCon/tree/main/maniunicon/customize/policy_model). It's supported by [Maniunicon](https://github.com/Universal-Control/ManiUniCon) and you can also use it in other platforms. 
+
+ManiUnicon is a universal real-world robot control platform for **expert data-collection and model deployment**. You can refer the [README](https://github.com/Universal-Control/ManiUniCon/blob/main/README.md) to collect your own real-world expert data in RLDS format.
+
+Once you have collected your own RLDS dataset, modify the following files in your forked openvla repo:
+- openvla/prismatic/vla/datasets/rlds/oxe/transforms.py
+- openvla/prismatic/vla/datasets/rlds/oxe/mixtures.py
+- openvla/prismatic/vla/datasets/rlds/oxe/configs.py
+
+Then you can perform the two-stage sft from our OXE pre-trained FALCON [model weights](https://huggingface.co/FALCON-VLA/FALCON-series):
+```bash
+## For RealWorld:
+bash scripts/run.sh path/to/ur/real-world-sft-config.json
+```
+
+After training, You can follow [falcon config in maniunicon](https://github.com/Universal-Control/ManiUniCon/tree/main/configs/policy) and [falcon model class in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model) to deploy FALCON. We provide our **standard FALCON model** along with the **FALCON-PCD model** for real-world deployment, please feel free to give a try! 
+
 ## 🗒️ TODO List <a name="todo-list"></a>
 - [x] Release the code, model of FALCON.
 - [x] Release the CALVIN & SimplerEnv evaluation code and model weights for FALCON series.
 - [x] Release pre-training / post-training code for FALCON series.
 - [x] Release the preprocessed point cloud data and camera parameters for CALVIN ABC & CALVIN ABCD.
-- [ ] Release the code for real-world deployment of FALCON via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon).
+- [x] Release the code for real-world deployment of FALCON series via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon).
 
 ## 🤗 FAQs <a name="faqs"></a>
 If you encounter any issues, feel free to open an issue on GitHub or reach out through discussions. We appreciate your feedback and contributions! 🚀
