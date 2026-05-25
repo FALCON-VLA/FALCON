@@ -69,7 +69,7 @@
 </p>
 
 ## Updates 🚀🚀🚀
-- [25/05/2026] Released the real-world deployment pipeline for the FALCON series via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon), along with FALCON weights pretrained on OXE dataset. Please feel free to explore, deploy, and adapt it to your needs!
+- [25/05/2026] Released the **real-world deployment pipeline** for the FALCON series via [ManiUniCon](https://github.com/Universal-Control/ManiUniCon), along with FALCON pretrained weights on OXE dataset. Please feel free to explore, deploy, and adapt it to your needs!
 
 - [18/05/2026] Released the **pre-training** and **post-training code** for the FALCON series, and the preprocessed point cloud data & camera parameters for **CALVIN ABC & CALVIN ABCD**. Welcome to check it out and build on top of it!
 
