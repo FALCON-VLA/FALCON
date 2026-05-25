@@ -206,7 +206,7 @@ We provide the following model weights and their config files in our paper:
   </tr>
   <tr>
     <td>FALCON-FC-OXE-MAGIC-SOUP-PT</td>
-    <td><a href="https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/">falcon-oxe-magic-soup-pretrain-pt</a></td>
+    <td><a href="https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/falcon-oxe-magic-soup-pretrain/ckpts">falcon-oxe-magic-soup-pretrain-pt</a></td>
     <td> / </td>
     <td>FALCON with fc head pretrained on oxe using oxe_magic_soup data mixture.</td>
   </tr>
@@ -495,7 +495,7 @@ Once you have collected your own RLDS dataset, modify the following files in you
 - openvla/prismatic/vla/datasets/rlds/oxe/mixtures.py
 - openvla/prismatic/vla/datasets/rlds/oxe/configs.py
 
-Then you can perform the two-stage sft from our OXE pre-trained FALCON [model weights](https://huggingface.co/FALCON-VLA/FALCON-series):
+Then you can perform the two-stage sft from our OXE pre-trained FALCON [model weights](https://huggingface.co/FALCON-VLA/FALCON-series/tree/main/falcon-oxe-magic-soup-pretrain/ckpts):
 ```bash
 ## For RealWorld:
 bash scripts/run.sh path/to/ur/real-world-sft-config.json
