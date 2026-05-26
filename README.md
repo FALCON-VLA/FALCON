@@ -486,7 +486,7 @@ python3 tools/get_simpler_results.py
 > Please make sure that the paths to the model checkpoints and configuration files are correct and match the setup of your environment before running the benchmark evaluation scripts.
 
 ## 🌍 Real-World Deployment <a name="real-world-deployment"></a>
-We provide our model wrapper for Real-World deployments in [ManiUniCon/maniunicon/customize/policy_model/falcon_model.py](https://github.com/Universal-Control/ManiUniCon/tree/main/maniunicon/customize/policy_model). It's supported by [Maniunicon](https://github.com/Universal-Control/ManiUniCon) and you can also use it in other platforms. 
+We provide our model wrapper for Real-World deployments in [ManiUniCon/maniunicon/customize/policy_model/falcon_model.py](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model/falcon_model.py). It's supported by [Maniunicon](https://github.com/Universal-Control/ManiUniCon) and you can also use it in other platforms. 
 
 ManiUnicon is a universal real-world robot control platform for **expert data-collection and model deployment**. You can refer the [README](https://github.com/Universal-Control/ManiUniCon/blob/main/README.md) to collect your own real-world expert data in RLDS format.
 
@@ -501,7 +501,7 @@ Then you can perform the two-stage sft from our OXE pre-trained FALCON [model we
 bash scripts/run.sh path/to/ur/real-world-sft-config.json
 ```
 
-After training, You can follow [falcon config in maniunicon](https://github.com/Universal-Control/ManiUniCon/tree/main/configs/policy) and [falcon model class in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model) to deploy FALCON. We provide our **standard FALCON model** along with the **FALCON-PCD model** for real-world deployment, please feel free to give a try! 
+After training, You can follow [falcon config in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/configs/policy/falcon.yaml) and [falcon model class in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model/falcon_model.py) to deploy FALCON. We provide our **standard FALCON model** along with the **FALCON-PCD model** for real-world deployment, please feel free to give a try! 
 
 ## 🗒️ TODO List <a name="todo-list"></a>
 - [x] Release the code, model of FALCON.
