@@ -501,7 +501,7 @@ Then you can perform the two-stage sft from our OXE pre-trained FALCON [model we
 bash scripts/run.sh path/to/ur/real-world-sft-config.json
 ```
 
-After training, You can follow [falcon config in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/configs/policy/falcon.yaml) and [falcon model class in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model/falcon_model.py) to deploy FALCON. We provide our **standard FALCON model** along with the **FALCON-PCD model** for real-world deployment, please feel free to give a try! 
+After training, You can follow [falcon config](https://github.com/Universal-Control/ManiUniCon/blob/main/configs/policy/falcon.yaml)/[falcon-pcd config](https://github.com/Universal-Control/ManiUniCon/blob/main/configs/policy/falcon_pcd.yaml) in maniunicon and [falcon model class in maniunicon](https://github.com/Universal-Control/ManiUniCon/blob/main/maniunicon/customize/policy_model/falcon_model.py) to deploy FALCON. We provide our **standard FALCON model** along with the **FALCON-PCD model** for real-world deployment, please feel free to give a try! 
 
 ## 🗒️ TODO List <a name="todo-list"></a>
 - [x] Release the code, model of FALCON.
